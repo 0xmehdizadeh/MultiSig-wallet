@@ -26,9 +26,11 @@ contract MultiSigWallet {
     // Store threshold
     uint public threshold;
     
-    // CONSTRUCTOR
-    // Sets initial owners
-    // sets threshold
+    constructor(){
+        owners.push(msg.sender);
+        isOwner[msg.sender] = true;
+        threshold = 1;
+    }
     
     // FUNCTIONS
     // submitTransaction()
