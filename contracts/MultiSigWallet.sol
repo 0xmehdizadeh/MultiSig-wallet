@@ -31,13 +31,26 @@ contract MultiSigWallet {
         isOwner[msg.sender] = true;
         threshold = 1;
     }
+
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "Only owners can call this function");
+        _;
+    }
     
     // FUNCTIONS
+    // add Owner
+    function addOwner(address _newOwner) public onlyOwner {
+        require(_newOwner != address(0), "Invalid owner address");
+        require(!isOwner[_newOwner], "Address is already an owner");
+        owners.push(_newOwner);
+        isOwner[_newOwner] = true;
+    }
+
     // submitTransaction()
     // approveTransaction()
     // executeTransaction()
     // cancelTransaction()
-    // add newowner()
+    
     // removeOwner()
     // changeThreshold()
 }
