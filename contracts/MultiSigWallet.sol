@@ -2,13 +2,6 @@
 pragma solidity ^0.8.0;
 
 contract MultiSigWallet {
-    // STORAGE VARIABLES
-    // List all owners
-    address[] public owners;
-    
-    // Track if address is owner
-    mapping(address => bool) public isOwner;
-
     struct Transaction {
         address to;
         uint256 value;
@@ -18,6 +11,13 @@ contract MultiSigWallet {
         address proposedBy;
         uint256 proposedAt;
     }
+    
+
+    event SubmitTransaction(address indexed proposer, uint indexed txIndex, address indexed to, uint256 value, bytes data);
+    event ApproveTransaction(address indexed approver, uint indexed txIndex);
+    event ExecuteTransaction(address indexed executer, uint indexed txIndex);
+
+    // STORAGE VARIABLES
     // List all transactions
     Transaction[] public transactions;
     // Track approvals of a specific transaction by an owner
@@ -25,6 +25,12 @@ contract MultiSigWallet {
 
     // Store threshold
     uint public threshold;
+    
+    // List all owners
+    address[] public owners;
+    
+    // Track if address is owner
+    mapping(address => bool) public isOwner;
     
     constructor(){
         owners.push(msg.sender);
@@ -79,7 +85,6 @@ contract MultiSigWallet {
         require(success, "Transaction execution failed");
     }
     // cancelTransaction()
-    
     // removeOwner()
     // changeThreshold()
 }
