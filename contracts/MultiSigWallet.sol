@@ -60,7 +60,13 @@ contract MultiSigWallet {
         }));
     }
     // approveTransaction()
-   
+    function approveTransaction(uint _txIndex) public onlyOwner {
+        require(_txIndex < transactions.length, "Transaction does not exist");
+        require(!transactions[_txIndex].executed, "Transaction already executed");
+        require(!approvals[_txIndex][msg.sender], "Transaction already approved by this owner");
+        approvals[_txIndex][msg.sender] = true;
+        transactions[_txIndex].approvalCount += 1;
+    }
     // executeTransaction()
     // cancelTransaction()
     
