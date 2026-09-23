@@ -68,6 +68,16 @@ contract MultiSigWallet {
         transactions[_txIndex].approvalCount += 1;
     }
     // executeTransaction()
+    function executeTransaction(uint _txIndex) public onlyOwner {
+        require(_txIndex < transactions.length, "Transaction does not exist");
+        require(!transactions[_txIndex].executed, "Transaction already executed");
+        require(transactions[_txIndex].approvalCount >= threshold, "Not enough approvals");
+        Transaction storage transaction = transactions[_txIndex];
+        
+        transaction.executed = true;
+        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
     // cancelTransaction()
     
     // removeOwner()
