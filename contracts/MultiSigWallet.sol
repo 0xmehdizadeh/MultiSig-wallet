@@ -47,6 +47,11 @@ contract MultiSigWallet {
         require(_txIndex < transactions.length, "Transaction does not exist");
         _;
     }
+
+    modifier notExecuted(uint256 _txIndex) {
+        require(!transactions[_txIndex].executed, "Transaction already executed");
+        _;
+    }
     
     // FUNCTIONS
     // add Owner
