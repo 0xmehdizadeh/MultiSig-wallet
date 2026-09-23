@@ -64,6 +64,7 @@ contract MultiSigWallet {
             proposedBy: msg.sender,
             proposedAt: block.timestamp
         }));
+        emit SubmitTransaction(msg.sender, transactions.length - 1, _to, _value, _data);
     }
     // approveTransaction()
     function approveTransaction(uint _txIndex) public onlyOwner {
@@ -72,6 +73,7 @@ contract MultiSigWallet {
         require(!approvals[_txIndex][msg.sender], "Transaction already approved by this owner");
         approvals[_txIndex][msg.sender] = true;
         transactions[_txIndex].approvalCount += 1;
+        emit ApproveTransaction(msg.sender, _txIndex);
     }
     // executeTransaction()
     function executeTransaction(uint _txIndex) public onlyOwner {
@@ -83,6 +85,7 @@ contract MultiSigWallet {
         transaction.executed = true;
         (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
         require(success, "Transaction execution failed");
+        emit ExecuteTransaction(msg.sender, _txIndex);
     }
     // cancelTransaction()
     // removeOwner()
