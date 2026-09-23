@@ -47,6 +47,19 @@ contract MultiSigWallet {
     }
 
     // submitTransaction()
+    function submitTransaction(address _to, uint256 _value, bytes memory _data) public {
+        require(isOwner[msg.sender], "Only owners can submit transactions");
+        require(_to != address(0), "Invalid recipient address");
+        transactions.push(Transaction({
+            to: _to,
+            value: _value,
+            data: _data,
+            approvalCount: 0,
+            executed: false,
+            proposedBy: msg.sender,
+            proposedAt: block.timestamp
+        }));
+    }
     // approveTransaction()
     // executeTransaction()
     // cancelTransaction()
