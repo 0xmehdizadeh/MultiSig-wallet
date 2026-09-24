@@ -16,6 +16,7 @@ contract MultiSigWallet {
     event SubmitTransaction(address indexed proposer, uint indexed txIndex, address indexed to, uint256 value, bytes data);
     event ApproveTransaction(address indexed approver, uint indexed txIndex);
     event ExecuteTransaction(address indexed executer, uint indexed txIndex);
+    event changeThreshold(uint oldThreshold, uint indexed newThreshold);
 
     // STORAGE VARIABLES
     // List all transactions
@@ -95,8 +96,14 @@ contract MultiSigWallet {
     }
 
     receive() external payable {}
-    
+
     // cancelTransaction()
     // removeOwner()
     // changeThreshold()
+    function changeThreshold(uint _newThreshold) public onlyOwner {
+        require(_newThreshold > 0 && _newThreshold <= owners.length, "Invalid threshold");
+        uint oldThreshold = threshold;
+        threshold = _newThreshold;
+        emit changeThreshold(oldThreshold, _newThreshold);
+    }
 }
