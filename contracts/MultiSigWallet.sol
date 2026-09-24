@@ -93,6 +93,9 @@ contract MultiSigWallet {
         require(success, "Transaction execution failed");
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
+
+    receive() external payable {}
+    
     // cancelTransaction()
     // removeOwner()
     // changeThreshold()
