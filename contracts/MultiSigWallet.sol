@@ -16,7 +16,8 @@ contract MultiSigWallet {
     event SubmitTransaction(address indexed proposer, uint indexed txIndex, address indexed to, uint256 value, bytes data);
     event ApproveTransaction(address indexed approver, uint indexed txIndex);
     event ExecuteTransaction(address indexed executer, uint indexed txIndex);
-    event changeThreshold(uint oldThreshold, uint indexed newThreshold);
+    event ChangeThreshold(uint oldThreshold, uint indexed newThreshold);
+    event OwnerRemoved(address indexed removedOwner);
 
     // STORAGE VARIABLES
     // List all transactions
@@ -99,11 +100,25 @@ contract MultiSigWallet {
 
     // cancelTransaction()
     // removeOwner()
+    function removeOwner(address _owner) public onlyOwner {
+        require(isOwner[_owner], "Address is not an owner");
+        require(owners.length > 1, "Cannot remove the last owner");
+        require(threshold <= owners.length - 1, "Threshold must be less than or equal to the number of remaining owners");
+        isOwner[_owner] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == _owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+        emit OwnerRemoved(_owner);
+    }
     // changeThreshold()
     function changeThreshold(uint _newThreshold) public onlyOwner {
         require(_newThreshold > 0 && _newThreshold <= owners.length, "Invalid threshold");
         uint oldThreshold = threshold;
         threshold = _newThreshold;
-        emit changeThreshold(oldThreshold, _newThreshold);
+        emit ChangeThreshold(oldThreshold, _newThreshold);
     }
 }
