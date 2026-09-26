@@ -8,6 +8,7 @@ contract MultiSigWallet {
         bytes data;
         uint256 approvalCount;
         bool executed;
+        bool cancelled;
         address proposedBy;
         uint256 proposedAt;
     }
@@ -51,7 +52,7 @@ contract MultiSigWallet {
     }
 
     modifier notExecuted(uint256 _txIndex) {
-        require(!transactions[_txIndex].executed, "Transaction already executed");
+        require(!transactions[_txIndex].executed && !transactions[_txIndex].cancelled, "Transaction already executed or cancelled");
         _;
     }
     
