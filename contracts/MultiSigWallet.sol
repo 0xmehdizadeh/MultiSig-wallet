@@ -19,6 +19,7 @@ contract MultiSigWallet {
     event ExecuteTransaction(address indexed executer, uint indexed txIndex);
     event ChangeThreshold(uint oldThreshold, uint indexed newThreshold);
     event OwnerRemoved(address indexed removedOwner);
+    event CancelTransaction(address indexed canceller, uint indexed txIndex);
 
     // STORAGE VARIABLES
     // List all transactions
@@ -100,6 +101,10 @@ contract MultiSigWallet {
     receive() external payable {}
 
     // cancelTransaction()
+    function cancelTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+        transactions[_txIndex].cancelled = true;
+        emit CancelTransaction(msg.sender, _txIndex);
+    }
     // removeOwner()
     function removeOwner(address _owner) public onlyOwner {
         require(isOwner[_owner], "Address is not an owner");
