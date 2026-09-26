@@ -18,8 +18,10 @@ contract MultiSigWallet {
     event ApproveTransaction(address indexed approver, uint indexed txIndex);
     event ExecuteTransaction(address indexed executer, uint indexed txIndex);
     event ChangeThreshold(uint oldThreshold, uint indexed newThreshold);
+    event OwnerAdded(address indexed newOwner);
     event OwnerRemoved(address indexed removedOwner);
     event CancelTransaction(address indexed canceller, uint indexed txIndex);
+
 
     // STORAGE VARIABLES
     // List all transactions
@@ -64,6 +66,7 @@ contract MultiSigWallet {
         require(!isOwner[_newOwner], "Address is already an owner");
         owners.push(_newOwner);
         isOwner[_newOwner] = true;
+        emit OwnerAdded(_newOwner);
     }
 
     // submitTransaction()
