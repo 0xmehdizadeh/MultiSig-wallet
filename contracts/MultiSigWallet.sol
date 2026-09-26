@@ -75,6 +75,7 @@ contract MultiSigWallet {
             data: _data,
             approvalCount: 0,
             executed: false,
+            cancelled: false,
             proposedBy: msg.sender,
             proposedAt: block.timestamp
         }));
@@ -97,9 +98,6 @@ contract MultiSigWallet {
         require(success, "Transaction execution failed");
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
-
-    receive() external payable {}
-
     // cancelTransaction()
     function cancelTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
         transactions[_txIndex].cancelled = true;
@@ -127,4 +125,5 @@ contract MultiSigWallet {
         threshold = _newThreshold;
         emit ChangeThreshold(oldThreshold, _newThreshold);
     }
+     receive() external payable {}
 }
