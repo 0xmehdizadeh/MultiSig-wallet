@@ -110,7 +110,6 @@ contract MultiSigWallet {
     function removeOwner(address _owner) public onlyOwner {
         require(isOwner[_owner], "Address is not an owner");
         require(_owner != msg.sender, "Owner cannot remove themselves");
-        require(owners.length > 1, "Cannot remove the last owner");
         require(threshold <= owners.length - 1, "Threshold must be less than or equal to the number of remaining owners");
         isOwner[_owner] = false;
         for (uint i = 0; i < owners.length; i++) {
