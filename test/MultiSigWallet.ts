@@ -44,4 +44,13 @@ describe("MultiSigWallet", function (){
     );
    });
 
+   it("Should allow owner to change threshold", async function(){
+    await expect(
+      MultiSigWallet.connect(owner1).changeThreshold(2),
+    ).to.be.revertedWith("Invalid threshold");
+    await MultiSigWallet.connect(owner1).addOwner(owner2.address);
+    await MultiSigWallet.connect(owner1).addOwner(owner3.address);
+    await MultiSigWallet.connect(owner2).changeThreshold(2);
+    expect(await MultiSigWallet.threshold()).to.equal(2);
+   });
 })
