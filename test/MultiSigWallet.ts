@@ -53,4 +53,24 @@ describe("MultiSigWallet", function (){
     await MultiSigWallet.connect(owner2).changeThreshold(2);
     expect(await MultiSigWallet.threshold()).to.equal(2);
    });
+
+   it("Should allow owner to submit transactions", async function(){
+    await MultiSigWallet.connect(owner1).submitTransaction(user1.address, 1, "0x");
+    await expect(MultiSigWallet.connect(user1).submitTransaction(user2.address, 1, "0x")).to.be.revertedWith("Only owners can call this function");
+    expect(await MultiSigWallet.transactionCount()).to.equal(1);
+    await expect(
+      MultiSigWallet.connect(owner1).submitTransaction(
+        ethers.ZeroAddress,
+        1,
+        "0x",
+      ),
+    ).to.be.revertedWith("Invalid recipient address");
+    
+    const tx = await MultiSigWallet.transactions(0);
+    expect(tx.to).to.equal(user1.address);
+    expect(tx.value).to.equal(1);
+    expect(tx.approvalCount).to.equal(0);
+    expect(tx.executed).to.be.false;
+   });
+
 })
