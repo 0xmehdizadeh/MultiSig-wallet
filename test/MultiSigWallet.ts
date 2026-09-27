@@ -90,4 +90,25 @@ describe("MultiSigWallet", function (){
     expect(tx.approvalCount).to.equal(2);
    });
 
+   it("Should allow owners to execute transactions", async function(){
+    await MultiSigWallet.connect(owner1).addOwner(owner2.address);
+    await MultiSigWallet.connect(owner1).addOwner(owner3.address);
+    await MultiSigWallet.connect(owner1).submitTransaction(
+      user1.address,
+      ethers.parseEther("0.1"),
+      "0x",
+    );
+    await MultiSigWallet.connect(owner1).changeThreshold(2);
+    await MultiSigWallet.connect(owner2).approveTransaction(0);
+
+    await expect(
+      MultiSigWallet.connect(owner2).executeTransaction(0),
+    ).to.be.revertedWith("Not enough approvals");
+
+    await MultiSigWallet.connect(owner3).approveTransaction(0);
+    await MultiSigWallet.connect(owner1).executeTransaction(0);
+
+    const tx = await MultiSigWallet.transactions(0);
+    expect(tx.executed).to.be.true;
+   });
 })
