@@ -16,6 +16,10 @@ describe("MultiSigWallet", function (){
         [owner1, owner2, owner3, user1, user2] = await ethers.getSigners();
         MultiSigWallet = await ethers.deployContract("MultiSigWallet");
         await MultiSigWallet.waitForDeployment();
+        await owner1.sendTransaction({
+          to: await MultiSigWallet.getAddress(),
+          value: ethers.parseEther("10.0"), // Enough for all tests
+        });
     });
 
     it("Should allow owner to add owners", async function () {
