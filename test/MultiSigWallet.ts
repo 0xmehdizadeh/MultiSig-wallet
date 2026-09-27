@@ -115,4 +115,33 @@ describe("MultiSigWallet", function (){
     const tx = await MultiSigWallet.transactions(0);
     expect(tx.executed).to.be.true;
    });
+
+   it("Should allow owners to cancel transactions", async function(){
+    await MultiSigWallet.connect(owner1).addOwner(owner2.address);
+    await MultiSigWallet.connect(owner1).submitTransaction(
+      user1.address,
+      ethers.parseEther("0.1"),
+      "0x",
+    );
+    await MultiSigWallet.connect(owner2).approveTransaction(0);
+    await MultiSigWallet.connect(owner1).executeTransaction(0);
+    const tx = await MultiSigWallet.transactions(0);
+    expect(tx.executed).to.be.true;
+    await expect(
+      MultiSigWallet.connect(owner2).cancelTransaction(0),
+    ).to.be.revertedWith("Transaction already executed");
+
+    await MultiSigWallet.connect(owner2).submitTransaction(
+      user2.address,
+      ethers.parseEther("0.1"),
+      "0x",
+    );
+    await MultiSigWallet.connect(owner1).cancelTransaction(1);
+    const tx2 = await MultiSigWallet.transactions(1);
+    expect(tx2.cancelled).to.be.true;
+    await expect(
+      MultiSigWallet.connect(owner2).approveTransaction(1),
+    ).to.be.revertedWith("Transaction already cancelled");
+   });
+   
 })
