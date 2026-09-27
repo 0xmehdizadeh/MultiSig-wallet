@@ -78,8 +78,8 @@ describe("MultiSigWallet", function (){
    });
 
    it("Should allow owner to approve transactions", async function(){
-    await MultiSigWallet.connect(owner1).addOwner(owner2);
-    await MultiSigWallet.connect(owner1).addOwner(owner3);
+    await MultiSigWallet.connect(owner1).addOwner(owner2.address);
+    await MultiSigWallet.connect(owner1).addOwner(owner3.address);
     await MultiSigWallet.connect(owner1).submitTransaction(user1.address, 1, "0x");
     await MultiSigWallet.connect(owner1).changeThreshold(2);
     await MultiSigWallet.connect(owner2).approveTransaction(0);
