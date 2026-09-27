@@ -57,7 +57,12 @@ contract MultiSigWallet {
     }
 
     modifier notExecuted(uint256 _txIndex) {
-        require(!transactions[_txIndex].executed && !transactions[_txIndex].cancelled, "Transaction already executed or cancelled");
+        require(!transactions[_txIndex].executed, "Transaction already executed");
+        _;
+    }
+
+    modifier notCancelled(uint256 _txIndex) {
+        require(!transactions[_txIndex].cancelled, "Transaction already cancelled");
         _;
     }
     
@@ -88,14 +93,14 @@ contract MultiSigWallet {
         emit SubmitTransaction(msg.sender, transactions.length - 1, _to, _value, _data);
     }
     // approveTransaction()
-    function approveTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+    function approveTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) notCancelled(_txIndex) {
         require(!approvals[_txIndex][msg.sender], "Transaction already approved by this owner");
         approvals[_txIndex][msg.sender] = true;
         transactions[_txIndex].approvalCount += 1;
         emit ApproveTransaction(msg.sender, _txIndex);
     }
     // executeTransaction()
-    function executeTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+    function executeTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) notCancelled(_txIndex){
         require(transactions[_txIndex].approvalCount >= threshold, "Not enough approvals");
         Transaction storage transaction = transactions[_txIndex];
         
@@ -105,7 +110,7 @@ contract MultiSigWallet {
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
     // cancelTransaction()
-    function cancelTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+    function cancelTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) notCancelled(_txIndex) {
         transactions[_txIndex].cancelled = true;
         emit CancelTransaction(msg.sender, _txIndex);
     }
