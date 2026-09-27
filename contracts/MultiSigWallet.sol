@@ -26,6 +26,8 @@ contract MultiSigWallet {
     // STORAGE VARIABLES
     // List all transactions
     Transaction[] public transactions;
+    
+    uint public transactionCount;
     // Track approvals of a specific transaction by an owner
     mapping(uint => mapping(address => bool)) public approvals;
 
@@ -82,6 +84,7 @@ contract MultiSigWallet {
             proposedBy: msg.sender,
             proposedAt: block.timestamp
         }));
+        transactionCount = transactions.length;
         emit SubmitTransaction(msg.sender, transactions.length - 1, _to, _value, _data);
     }
     // approveTransaction()
