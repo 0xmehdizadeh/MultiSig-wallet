@@ -65,12 +65,29 @@ describe("MultiSigWallet", function (){
         "0x",
       ),
     ).to.be.revertedWith("Invalid recipient address");
-    
+
     const tx = await MultiSigWallet.transactions(0);
     expect(tx.to).to.equal(user1.address);
     expect(tx.value).to.equal(1);
     expect(tx.approvalCount).to.equal(0);
     expect(tx.executed).to.be.false;
+   });
+
+   it("Should allow owner to approve transactions", async function(){
+    await MultiSigWallet.connect(owner1).addOwner(owner2);
+    await MultiSigWallet.connect(owner1).addOwner(owner3);
+    await MultiSigWallet.connect(owner1).submitTransaction(user1.address, 1, "0x");
+    await MultiSigWallet.connect(owner1).changeThreshold(2);
+    await MultiSigWallet.connect(owner2).approveTransaction(0);
+    await MultiSigWallet.connect(owner3).approveTransaction(0);
+    await expect(
+      MultiSigWallet.connect(owner1).approveTransaction(1),
+    ).to.be.revertedWith("Transaction does not exist");
+    await expect(
+      MultiSigWallet.connect(owner3).approveTransaction(0),
+    ).to.be.revertedWith("Transaction already approved by this owner");
+    const tx = await MultiSigWallet.transactions(0);
+    expect(tx.approvalCount).to.equal(2);
    });
 
 })
